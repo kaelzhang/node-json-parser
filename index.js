@@ -61,8 +61,8 @@ function next () {
 }
 
 
-function expect (a, b) {
-  if (!is(a) && (!b || !is(b))) {
+function expect (a) {
+  if (!is(a)) {
     unexpected();
   }
 }
@@ -85,6 +85,7 @@ function parse_object () {
   while (!is('}')){
     if (started) {
       expect(',');
+      next();
     }
     started = true;
     expect('String');
@@ -108,6 +109,7 @@ function parse_array () {
   while(!is(']')){
     if (started) {
       expect(',');
+      next();
     }
     started = true;
     array.push(walk());
