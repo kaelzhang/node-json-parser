@@ -1,7 +1,7 @@
 {
   "name": "json-parser",
-  "version": "0.1.0",
-  "description": "JSON parser to parse the AST of JSON object even with comments.",
+  "version": "0.1.1",
+  "description": "JSON parser to parse JSON object and MAINTAIN comments.",
   "main": "index.js",
   "scripts": {
     "test": "./node_modules/.bin/mocha --reporter spec ./test/*.js"
