@@ -5,9 +5,6 @@ var esprima = require('esprima');
 exports.tokenize = tokenize;
 exports.parse = parse;
 
-var tokens;
-var current;
-var index;
 
 function tokenize (code) {
   return esprima.tokenize(code, {
@@ -16,9 +13,14 @@ function tokenize (code) {
   });
 }
 
+var tokens;
+var current;
+var index;
+var reviver;
 
-function parse (code) {
+function parse (code, rev) {
   tokens = tokenize(code);
+  reviver = rev;
 
   if (!tokens.length) {
     unexpected_end();
@@ -36,7 +38,16 @@ function parse (code) {
     result['//$'] = tokens.foot_comments;
   }
 
+  result = transform('', result);
+  reviver = null;
   return result;
+}
+
+
+function transform (k, v) {
+  return reviver
+    ? reviver(k, v)
+    : v;
 }
 
 
@@ -101,7 +112,7 @@ function parse_object () {
     next();
     expect(':');
     next();
-    obj[name] = walk();
+    obj[name] = transform(name, walk());
   }
   next();
   return obj;
@@ -111,13 +122,15 @@ function parse_object () {
 function parse_array () {
   var array = [];
   var started;
+  var i = 0;
   while(!is(']')){
     if (started) {
       expect(',');
       next();
     }
     started = true;
-    array.push(walk());
+    array[i] = transform(i, walk());
+    i ++;
   }
   next();
   return array;
