@@ -44,8 +44,8 @@ And the result will be:
 
   // Comment for a property is the value of `'// <prop>'`
   '// a': [
-    [['// comment for a'], ['/* block comment */']],
-    [['// comment at right']]
+    ['// comment for a', '/* block comment */'],
+    ['// comment at right']
   ],
 
   // The real value
