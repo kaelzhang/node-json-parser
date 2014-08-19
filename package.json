@@ -1,7 +1,7 @@
 {
   "name": "json-parser",
   "version": "0.1.0",
-  "description": "json-parser",
+  "description": "JSON parser to parse the AST of JSON object even with comments.",
   "main": "index.js",
   "scripts": {
     "test": "./node_modules/.bin/mocha --reporter spec ./test/*.js"
@@ -11,7 +11,14 @@
     "url": "git://github.com/kaelzhang/node-json-parser.git"
   },
   "keywords": [
-    "json-parser"
+    "json-parser",
+    "json",
+    "lex",
+    "parser",
+    "ast",
+    "syntax",
+    "mangler",
+    "comments"
   ],
   "engines": {
     "node": ">=0.10.0"
