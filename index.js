@@ -1,6 +1,6 @@
 'use strict';
 
-var tokenize = require('esprima').tokenize;
+var esprima = require('esprima');
 
 exports.tokenize = tokenize;
 exports.parse = parse;
@@ -9,11 +9,16 @@ var tokens;
 var current;
 var index;
 
-function parse (code, options) {
-  tokens = tokenize(code, {
+function tokenize (code) {
+  return esprima.tokenize(code, {
     comment: true,
     loc: true
   });
+}
+
+
+function parse (code) {
+  tokens = tokenize(code);
 
   if (!tokens.length) {
     unexpected_end();
