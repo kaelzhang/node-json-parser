@@ -2,6 +2,8 @@
 
 JSON parser to parse JSON object and MAINTAIN comments.
 
+This is a very low level module. For most situations, recommend to use [`comment-json`](https://www.npmjs.org/package/comment-json) instead.
+
 ## Install
 
 ```sh
@@ -42,8 +44,8 @@ And the result will be:
 
   // Comment for a property is the value of `'// <prop>'`
   '// a': [
-    ['// comment for a', '/* block comment */'],
-    ['// comment at right']
+    [['// comment for a'], ['/* block comment */']],
+    [['// comment at right']]
   ],
 
   // The real value
