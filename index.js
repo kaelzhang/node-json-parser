@@ -34,8 +34,13 @@ function parse (code, rev) {
   var result = walk();
 
   if (Object(result) === result) {
-    result['//^'] = tokens.head_comments;
-    result['//$'] = tokens.foot_comments;
+    if (tokens.head_comments.length) {
+      result['//^'] = tokens.head_comments;
+    }
+
+    if (tokens.foot_comments.length) {
+      result['//$'] = tokens.foot_comments;
+    }
   }
 
   result = transform('', result);
