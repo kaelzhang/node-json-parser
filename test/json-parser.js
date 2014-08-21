@@ -76,3 +76,39 @@ describe("parse()", function(){
     });
   });
 });
+
+var invalid = [
+  '{',
+  '}',
+  '[',
+  '',
+  '{a:1}',
+  '{"a":a}',
+  '{"a":undefined}'
+];
+
+// ECMA262 does not define the standard of error messages.
+// However, we throw error messages the same as JSON.parse()
+describe("error messages", function(){
+  invalid.forEach(function (i) {
+    it('error message:' + i, function(){
+      var error;
+      var err;
+
+      try {
+        parser.parse(i);
+      } catch(e) {
+        error = e;
+      }
+
+      try {
+        JSON.parse(i);
+      } catch(e) {
+        err = e;
+      }
+
+      expect(!!(err && error)).to.equal(true);
+      expect(error.message).to.equal(err.message);
+    });
+  });
+});
