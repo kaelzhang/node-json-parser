@@ -13,7 +13,8 @@ $ npm install json-parser --save
 ## Usage
 
 content
-```
+
+```js
 /**
  blah
  */
