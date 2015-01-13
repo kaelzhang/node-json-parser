@@ -77,14 +77,15 @@ describe("parse()", function(){
   });
 });
 
+
 var invalid = [
-  '{',
-  '}',
-  '[',
-  '',
-  '{a:1}',
-  '{"a":a}',
-  '{"a":undefined}'
+  { json: '{', err: 'Unexpected end of input' },
+  { json: '}', err: 'Ln 1, Col 0 : Unexpected token } near the <}>' },
+  { json: '[', err: 'Unexpected end of input' },
+  { json: '',  err: 'Unexpected end of input' },
+  { json: '{a:1}',   err: 'Ln 1, Col 1 : Unexpected token a near the <a>, expected: String' },
+  { json: '{"a":a}', err: 'Ln 1, Col 5 : Unexpected token a near the <a>' },
+  { json: '{"a":undefined}', err: 'Ln 1, Col 5 : Unexpected token u near the <undefined>' }
 ];
 
 // ECMA262 does not define the standard of error messages.
@@ -96,19 +97,13 @@ describe("error messages", function(){
       var err;
 
       try {
-        parser.parse(i);
+        parser.parse(i.json);
       } catch(e) {
         error = e;
       }
 
-      try {
-        JSON.parse(i);
-      } catch(e) {
-        err = e;
-      }
-
-      expect(!!(err && error)).to.equal(true);
-      expect(error.message).to.equal(err.message);
+      expect(!!(i.err && error)).to.equal(true);
+      expect(error.message).to.equal(i.err);
     });
   });
 });
