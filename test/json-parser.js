@@ -92,7 +92,7 @@ var invalid = [
 // However, we throw error messages the same as JSON.parse()
 describe("error messages", function(){
   invalid.forEach(function (i) {
-    it('error message:' + i, function(){
+    it('error message: ' + i.err, function(){
       var error;
       var err;
 
