@@ -84,13 +84,18 @@ function next () {
 
 function expect (a) {
   if (!is(a)) {
-    unexpected();
+    unexpected(a);
   }
 }
 
+function unexpected (a) {
 
-function unexpected () {
-  throw new SyntaxError('Unexpected token ' + current.value.slice(0, 1));
+  var msg = 'Ln ' + current.loc.start.line + ', Col ' + current.loc.start.column + ' : Unexpected token ' + current.value.slice(0, 1) + ' near the <'+ current.value + '>';
+  if(a) { 
+    msg += ', expected: ' + a;
+  }
+	
+  throw new SyntaxError(msg);
 }
 
 function unexpected_end () {
@@ -120,6 +125,7 @@ function parse_object () {
     obj[name] = transform(name, walk());
   }
   next();
+  
   return obj;
 }
 
