@@ -1,6 +1,6 @@
 {
   "name": "json-parser",
-  "version": "0.2.4",
+  "version": "1.0.0",
   "description": "JSON parser to parse JSON object and MAINTAIN comments.",
   "main": "index.js",
   "scripts": {
@@ -33,6 +33,6 @@
     "chai": "*"
   },
   "dependencies": {
-    "esprima": "^1.2.2"
+    "esprima": "^2.4.1"
   }
 }

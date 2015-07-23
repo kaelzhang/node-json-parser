@@ -1,4 +1,8 @@
-# json-parser [![NPM version](https://badge.fury.io/js/json-parser.svg)](http://badge.fury.io/js/json-parser) [![Build Status](https://travis-ci.org/kaelzhang/node-json-parser.svg?branch=master)](https://travis-ci.org/kaelzhang/node-json-parser) [![Dependency Status](https://gemnasium.com/kaelzhang/node-json-parser.svg)](https://gemnasium.com/kaelzhang/node-json-parser)
+[![NPM version](https://badge.fury.io/js/json-parser.svg)](http://badge.fury.io/js/json-parser)
+[![Build Status](https://travis-ci.org/kaelzhang/node-json-parser.svg?branch=master)](https://travis-ci.org/kaelzhang/node-json-parser)
+[![Dependency Status](https://gemnasium.com/kaelzhang/node-json-parser.svg)](https://gemnasium.com/kaelzhang/node-json-parser)
+
+# json-parser
 
 JSON parser to parse JSON object and MAINTAIN comments.
 
