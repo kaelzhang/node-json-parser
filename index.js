@@ -17,10 +17,12 @@ var tokens;
 var current;
 var index;
 var reviver;
+var remove_comments;
 
-function parse (code, rev) {
+function parse (code, rev, no_comments) {
   tokens = tokenize(code);
   reviver = rev;
+  remove_comments = no_comments;
 
   if (!tokens.length) {
     unexpected_end();
@@ -33,7 +35,7 @@ function parse (code, rev) {
 
   var result = walk();
 
-  if (Object(result) === result) {
+  if (Object(result) === result && !remove_comments) {
     if (tokens.head_comments.length) {
       result['//^'] = tokens.head_comments;
     }
@@ -111,7 +113,7 @@ function parse_object () {
     started = true;
     expect('String');
     name = JSON.parse(current.value);
-    if (current.comments) {
+    if (current.comments && !remove_comments) {
       obj['// ' + name] = current.comments;
     }
     next();

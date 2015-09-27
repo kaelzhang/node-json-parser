@@ -1,6 +1,6 @@
 [![NPM version](https://badge.fury.io/js/json-parser.svg)](http://badge.fury.io/js/json-parser)
 [![Build Status](https://travis-ci.org/kaelzhang/node-json-parser.svg?branch=master)](https://travis-ci.org/kaelzhang/node-json-parser)
-[![Dependency Status](https://gemnasium.com/kaelzhang/node-json-parser.svg)](https://gemnasium.com/kaelzhang/node-json-parser)
+[![Dependency Status](https://david-dm.org/kaelzhang/node-json-parser.svg)](https://david-dm.org/kaelzhang/node-json-parser)
 
 # json-parser
 
@@ -15,6 +15,16 @@ $ npm install json-parser --save
 ```
 
 ## Usage
+
+```js
+parser(text, [reviver=null,] [remove_comments=false])
+```
+
+- text `String` The string to parse as JSON. See the [JSON](http://json.org/) object for a description of JSON syntax.
+- reviver `function()|null` Default to `null`. It acts the same as the second parameter of [`JSON.parse`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse). If a function, prescribes how the value originally produced by parsing is transformed, before being returned.
+- remove_comments `Boolean` If true, the parsed JSON Object won't contain comments
+
+Returns the `Object` corresponding to the given JSON text.
 
 content
 
@@ -54,6 +64,19 @@ And the result will be:
   ],
 
   // The real value
+  a: 1
+}
+```
+
+```js
+var object_no_comments = parser.parse(content, null, true);
+console.log(object_no_comments)
+```
+
+And the result will be:
+
+```js
+{
   a: 1
 }
 ```
