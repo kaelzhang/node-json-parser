@@ -79,11 +79,15 @@ var cases = [
 
 cases.forEach(function (c) {
   describe("parse()", function(){
-    it(c.d, function(){
+    var _it = c.only
+      ? it.only
+      : it;
+
+    _it(c.d, function(){
       c.e(parser.parse(c.s));
     });
 
-    it(c.d + ', removes comments', function(){
+    _it(c.d + ', removes comments', function(){
       expect(parser.parse(c.s, null, true)).to.deep.equal(parser.parse(c.o));
     });
   });
