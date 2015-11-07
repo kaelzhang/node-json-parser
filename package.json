@@ -33,6 +33,6 @@
     "chai": "*"
   },
   "dependencies": {
-    "esprima": "~2.6.0"
+    "esprima": "~2.7.0"
   }
 }
