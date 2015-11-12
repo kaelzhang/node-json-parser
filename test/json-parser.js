@@ -73,6 +73,16 @@ var cases = [
       expect('// a' in obj).to.equal(true);
       expect(obj['// a']).to.deep.equal([['//a'], ['//b']]);
     }
+  },
+  {
+    // #8
+    d: 'support negative numbers',
+    s: '{//a\n"a": -1}',
+    o: '{"a": -1}',
+    e: function (obj) {
+      expect(obj.a).to.equal(-1);
+      expect('// a' in obj).to.equal(true);
+    }
   }
 ]
 
