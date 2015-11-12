@@ -78,7 +78,14 @@ function transform (k, v) {
 
 
 function walk () {
-  switch (type()) {
+  var tt = type();
+  var negative = '';
+  if (tt === '-') {
+      next();
+      tt = type();
+      negative = '-';
+  }
+  switch (tt) {
     case '{':
       next();
       return parse_object();
@@ -91,7 +98,7 @@ function walk () {
     case 'Numeric':
       var value = current.value;
       next();
-      return JSON.parse(value);
+      return JSON.parse(negative + value);
   }
 
   unexpected();
