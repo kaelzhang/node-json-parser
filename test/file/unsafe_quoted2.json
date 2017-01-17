@@ -9,7 +9,7 @@
 
   'ig"n\"o\'r\'e': [
         "node_m'odules",
-        "dist",
+        'dist',
       ],
 
   'ignore': [
