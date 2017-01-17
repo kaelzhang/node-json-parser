@@ -1,0 +1,18 @@
+/**
+ blah
+ */
+// comment at top
+{
+  // comment for a
+  /* block comment */
+  "a": 1, // comment at right
+
+
+
+  "ignore": [
+      "node_modules",
+      "dist",
+    ],
+
+}
+// comment at bottom
