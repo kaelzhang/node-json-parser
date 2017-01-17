@@ -106,7 +106,7 @@ function walk () {
     case 'Numeric':
       var value = current.value;
       next();
-      return JSON.parse(negative + value);
+      return JSON.parse((options.unsafe && tt == 'String') ? unsafe_quoted(negative + value) : negative + value);
   }
   unexpected();
 }
