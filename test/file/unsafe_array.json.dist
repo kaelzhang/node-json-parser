@@ -1,0 +1,7 @@
+{
+	"a": 1,
+	"ignore": [
+		"node_modules",
+		"dist"
+	]
+}
