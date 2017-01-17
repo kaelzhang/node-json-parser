@@ -132,6 +132,15 @@ function unexpected_end () {
   throw new JsonSyntaxError('Unexpected end of JSON input');
 }
 
+function unsafe_quoted(str)
+{
+  return str.replace(/^'(.*)'$/, function($0, $1)
+  {
+    let s = '"' + $1.replace(/\\?(")/g, "\\$1").replace(/\\(')/g, "$1") + '"';
+    console.log(str, '=', s);
+    return s;
+  })
+}
 
 function parse_object () {
   var obj = {};
@@ -151,7 +160,7 @@ function parse_object () {
 
     started = true;
     expect('String');
-    name = JSON.parse(current.value);
+    name = JSON.parse(options.unsafe ? unsafe_quoted(current.value) : current.value);
     if (current.comments && !remove_comments) {
       obj['// ' + name] = current.comments;
     }
