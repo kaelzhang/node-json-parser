@@ -38,10 +38,18 @@ var index;
 var reviver;
 var remove_comments;
 
-function parse (code, rev, no_comments) {
+let options = {
+  debug: false,
+  unsafe: false,
+};
+
+function parse (code, rev, no_comments, opt) {
   tokens = tokenize(code);
   reviver = rev;
   remove_comments = no_comments;
+
+  options = Object.assign({}, opt);
+  options.unsafe = !!options.unsafe;
 
   if (!tokens.length) {
     unexpected_end();
@@ -100,7 +108,6 @@ function walk () {
       next();
       return JSON.parse(negative + value);
   }
-
   unexpected();
 }
 
@@ -118,11 +125,11 @@ function expect (a) {
 
 
 function unexpected () {
-  throw new SyntaxError('Unexpected token ' + current.value.slice(0, 1));
+  throw new JsonSyntaxError('Unexpected token ' + current.value.slice(0, 1) + ' in JSON at position ' + current.loc.start.column);
 }
 
 function unexpected_end () {
-  throw new SyntaxError('Unexpected end of input');
+  throw new JsonSyntaxError('Unexpected end of JSON input');
 }
 
 
@@ -136,6 +143,12 @@ function parse_object () {
       expect(',');
       next();
     }
+
+    if (started && options.unsafe && is('}') && is(',', -1))
+	{
+      break;
+	}
+
     started = true;
     expect('String');
     name = JSON.parse(current.value);
@@ -148,6 +161,7 @@ function parse_object () {
     obj[name] = transform(name, walk());
   }
   next();
+
   return obj;
 }
 
@@ -161,6 +175,12 @@ function parse_array () {
       expect(',');
       next();
     }
+
+    if (started && options.unsafe && is(']') && is(',', -1))
+    {
+      break;
+    }
+
     started = true;
     array[i] = transform(i, walk());
     i ++;
@@ -170,7 +190,16 @@ function parse_array () {
 }
 
 
-function type () {
+function type (offset) {
+  if (offset)
+  {
+    let a = tokens[index + offset]
+
+    return (a && a.type === 'Punctuator'
+      ? a.value
+      : a.type) || void(0);
+  }
+
   if (!current) {
     unexpected_end();
   }
@@ -181,8 +210,8 @@ function type () {
 }
 
 
-function is (t) {
-  return type() === t;
+function is (t, offset) {
+  return type(offset) === t;
 }
 
 
@@ -209,7 +238,7 @@ function sort_comment_tokens () {
     // Whether there are comments left.
     return !!comment;
   }
-  
+
   var head_comments = [];
   var foot_comments = [];
 
@@ -262,7 +291,7 @@ function sort_comment_tokens () {
 
 
 function left (a, b) {
-  return a 
+  return a
     && (
       a.loc.start.line < b.loc.start.line
       ||
@@ -273,7 +302,7 @@ function left (a, b) {
 
 
 function right (a, b) {
-  return a 
+  return a
     && a.loc.start.line === b.loc.start.line
     && a.loc.start.column > b.loc.start.column;
 }
@@ -283,4 +312,20 @@ function comment_content (comment) {
   return comment.type === 'Block'
     ? '/*' + comment.value + '*/'
     : '//' + comment.value;
+}
+
+class JsonSyntaxError extends SyntaxError {
+  constructor(message) {
+    super(message);
+
+    if (options.debug)
+    {
+        this.message += "\n\n" + JSON.stringify({
+          index: index,
+          current: current,
+          prev: tokens[index-1],
+          next: tokens[index+1]
+        }, null, "\t")
+    }
+  }
 }
