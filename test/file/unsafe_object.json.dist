@@ -1,0 +1,8 @@
+{
+	"a": 1,
+	"development": {
+		"retainLines": true,
+		"sourceMaps": true,
+		"auxiliaryCommentAfter": true
+	}
+}
