@@ -137,7 +137,7 @@ function unsafe_quoted(str)
   return str.replace(/^'(.*)'$/, function($0, $1)
   {
     let s = '"' + $1.replace(/\\?(")/g, "\\$1").replace(/\\(')/g, "$1") + '"';
-    console.log(str, '=', s);
+    //console.log(str, '=', s);
     return s;
   })
 }
