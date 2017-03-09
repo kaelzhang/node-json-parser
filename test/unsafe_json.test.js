@@ -5,7 +5,7 @@
 'use strict';
 
 var expect = require('chai').expect;
-var parser = require('../')
+var parser = require('../src')
 
 const fs = require('fs');
 
