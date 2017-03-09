@@ -43,3 +43,6 @@ temp/
 tmp/
 
 
+/test/temp/*
+!/test/temp/.gitkeep
+.idea

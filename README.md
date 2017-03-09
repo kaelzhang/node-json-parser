@@ -1,17 +1,21 @@
-[![NPM version](https://badge.fury.io/js/json-parser.svg)](http://badge.fury.io/js/json-parser)
-[![Build Status](https://travis-ci.org/kaelzhang/node-json-parser.svg?branch=master)](https://travis-ci.org/kaelzhang/node-json-parser)
-<!-- [![Dependency Status](https://david-dm.org/kaelzhang/node-json-parser.svg)](https://david-dm.org/kaelzhang/node-json-parser) -->
-
 # json-parser
 
 JSON parser to parse JSON object and MAINTAIN comments.
 
 This is a very low level module. For most situations, recommend to use [`comment-json`](https://www.npmjs.org/package/comment-json) instead.
 
+## this version
+
+this version base on kaelzhang/node-json-parser
+
+but add support load unsafe/un-strict json
+
+see test file
+
 ## Install
 
 ```sh
-$ npm install json-parser --save
+$ npm install json-parser2 --save
 ```
 
 ## Usage

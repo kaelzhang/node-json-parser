@@ -1,0 +1,11 @@
+{
+	"a": 1,
+	"ig\"n\"ore": [
+		"node_m'odules",
+		"dist"
+	],
+	"ignore": [
+		"node_modules",
+		"dist"
+	]
+}

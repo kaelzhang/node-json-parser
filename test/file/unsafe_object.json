@@ -1,0 +1,19 @@
+/**
+ blah
+ */
+// comment at top
+{
+  // comment for a
+  /* block comment */
+  "a": 1, // comment at right
+
+      "development": {
+        "retainLines": true,
+        "sourceMaps": true,
+        "auxiliaryCommentAfter": true,
+      },
+
+
+
+}
+// comment at bottom
