@@ -1,286 +1,264 @@
-'use strict';
+const esprima = require('esprima')
 
-var esprima = require('esprima');
-
-exports.tokenize = tokenize;
-exports.parse = parse;
-
+exports.tokenize = tokenize
+exports.parse = parse
 
 function tokenize (code) {
-  var list = esprima.tokenize(code, {
+  const list = esprima.tokenize(code, {
     comment: true,
     loc: true
-  });
+  })
   if (list.comment) {
-    return list;
+    return list
   }
 
-  var result = [];
-  var comments = [];
-  list.map(function (t) {
+  const result = []
+  const comments = []
+  list.forEach(t => {
     if (t.type === 'LineComment') {
-      t.type = 'Line';
-      comments.push(t);
+      t.type = 'Line'
+      comments.push(t)
     } else if (t.type === 'BlockComment') {
-      t.type = 'Block';
-      comments.push(t);
+      t.type = 'Block'
+      comments.push(t)
     } else {
-      result.push(t);
+      result.push(t)
     }
-  });
-  result.comments = comments;
-  return result;
+  })
+  result.comments = comments
+  return result
 }
 
-var tokens;
-var current;
-var index;
-var reviver;
-var remove_comments;
+let tokens
+let current
+let index
+let reviver
+let remove_comments
 
 function parse (code, rev, no_comments) {
-  tokens = tokenize(code);
-  reviver = rev;
-  remove_comments = no_comments;
+  tokens = tokenize(code)
+  reviver = rev
+  remove_comments = no_comments
 
   if (!tokens.length) {
-    unexpected_end();
+    unexpected_end()
   }
 
-  sort_comment_tokens();
+  sort_comment_tokens()
 
-  index = -1;
-  next();
+  index = - 1
+  next()
 
-  var result = walk();
+  let result = walk()
 
   if (Object(result) === result && !remove_comments) {
     if (tokens.head_comments.length) {
-      result['//^'] = tokens.head_comments;
+      result['//^'] = tokens.head_comments
     }
 
     if (tokens.foot_comments.length) {
-      result['//$'] = tokens.foot_comments;
+      result['//$'] = tokens.foot_comments
     }
   }
 
-  result = transform('', result);
-  reviver = null;
-  return result;
+  result = transform('', result)
+  reviver = null
+  return result
 }
-
 
 function transform (k, v) {
   return reviver
     ? reviver(k, v)
-    : v;
+    : v
 }
-
 
 function walk () {
-  var tt = type();
-  var negative = '';
+  let tt = type()
+  let negative = ''
   if (tt === '-') {
-      next();
-      tt = type();
-      negative = '-';
+    next()
+    tt = type()
+    negative = '-'
   }
   switch (tt) {
-    case '{':
-      next();
-      return parse_object();
-    case '[':
-      next();
-      return parse_array();
-    case 'String':
-    case 'Boolean':
-    case 'Null':
-    case 'Numeric':
-      var value = current.value;
-      next();
-      return JSON.parse(negative + value);
+  case '{':
+    next()
+    return parse_object()
+  case '[':
+    next()
+    return parse_array()
+  case 'String':
+  case 'Boolean':
+  case 'Null':
+  case 'Numeric':
+    next()
+    return JSON.parse(negative + current.value)
+  default:
   }
 
-  unexpected();
+  unexpected()
 }
-
 
 function next () {
-  return current = tokens[++ index];
+  return current = tokens[++ index]
 }
-
 
 function expect (a) {
   if (!is(a)) {
-    unexpected();
+    unexpected()
   }
 }
 
-
 function unexpected () {
-  throw new SyntaxError('Unexpected token ' + current.value.slice(0, 1));
+  throw new SyntaxError(`Unexpected token ${current.value.slice(0, 1)}`)
 }
 
 function unexpected_end () {
-  throw new SyntaxError('Unexpected end of input');
+  throw new SyntaxError('Unexpected end of input')
 }
-
 
 function parse_object () {
-  var obj = {};
-  var comment;
-  var started;
-  var name;
-  while (!is('}')){
+  const obj = {}
+  let started
+  let name
+  while (!is('}')) {
     if (started) {
-      expect(',');
-      next();
+      expect(',')
+      next()
     }
-    started = true;
-    expect('String');
-    name = JSON.parse(current.value);
+    started = true
+    expect('String')
+    name = JSON.parse(current.value)
     if (current.comments && !remove_comments) {
-      obj['// ' + name] = current.comments;
+      obj[`// ${name}`] = current.comments
     }
-    next();
-    expect(':');
-    next();
-    obj[name] = transform(name, walk());
+    next()
+    expect(':')
+    next()
+    obj[name] = transform(name, walk())
   }
-  next();
-  return obj;
+  next()
+  return obj
 }
-
 
 function parse_array () {
-  var array = [];
-  var started;
-  var i = 0;
-  while(!is(']')){
+  const array = []
+  let started
+  let i = 0
+  while (!is(']')) {
     if (started) {
-      expect(',');
-      next();
+      expect(',')
+      next()
     }
-    started = true;
-    array[i] = transform(i, walk());
-    i ++;
+    started = true
+    array[i] = transform(i, walk())
+    i ++
   }
-  next();
-  return array;
+  next()
+  return array
 }
-
 
 function type () {
   if (!current) {
-    unexpected_end();
+    unexpected_end()
   }
 
   return current.type === 'Punctuator'
     ? current.value
-    : current.type;
+    : current.type
 }
-
 
 function is (t) {
-  return type() === t;
+  return type() === t
 }
-
 
 function sort_comment_tokens () {
-  var ts = tokens;
-  var comments = ts.comments;
+  const ts = tokens
+  const {comments} = ts
   if (!comments) {
-    return;
+    return
   }
+
+  let ci = 0
 
   function compare_to_then_push (condition, to, setup) {
-    var comment;
-    var first = true;
-    var host;
-    while((comment = comments[ci ++]) && condition(comment, to)){
+    let comment
+    let first = true
+    let host
+    while ((comment = comments[ci ++]) && condition(comment, to)) {
       if (first) {
-        host = setup();
+        host = setup()
       }
-      first = false;
-      host.push(comment_content(comment));
+      first = false
+      host.push(comment_content(comment))
     }
 
-    ci --;
+    ci --
     // Whether there are comments left.
-    return !!comment;
+    return !!comment
   }
-  
-  var head_comments = [];
-  var foot_comments = [];
 
-  var first = ts[0];
-  var ci = 0;
-  var comment = compare_to_then_push(left, first, function () {
-    return head_comments;
-  });
+  const head_comments = []
+  const foot_comments = []
 
-  var i = 0;
-  var token;
-  var next;
+  const first = ts[0]
+  let comment = compare_to_then_push(left, first, () => head_comments)
+
+  let i = 0
+  let token
+  let next_token
+
   for (; i < ts.length; i ++) {
     if (!comment) {
-      break;
+      break
     }
 
-    token = ts[i];
-    next = ts[i + 1];
+    token = ts[i]
+    next_token = ts[i + 1]
 
-    if (token.type === 'String' && next && next.value === ':') {
-      comment = compare_to_then_push(left, token, function () {
-        token.comments || (token.comments = []);
-        return token.comments[0] || (token.comments[0] = []);
-      });
+    if (token.type === 'String' && next_token && next_token.value === ':') {
+      comment = compare_to_then_push(left, token, () => {
+        token.comments || (token.comments = [])
+        return token.comments[0] || (token.comments[0] = [])
+      })
 
       if (!comment) {
-        break;
+        break
       }
 
-      comment = compare_to_then_push(right, token, function () {
-        token.comments || (token.comments = []);
-        return token.comments[1] || (token.comments[1] = []);
-      });
+      comment = compare_to_then_push(right, token, () => {
+        token.comments || (token.comments = [])
+        return token.comments[1] || (token.comments[1] = [])
+      })
     }
   }
 
-  compare_to_then_push(function () {
-    return true
-  }, null, function () {
-    return foot_comments;
-  });
+  compare_to_then_push(() => true, null, () => foot_comments)
 
-  comments.length = 0;
-  delete ts.comments;
+  comments.length = 0
+  delete ts.comments
 
-  tokens.head_comments = head_comments;
-  tokens.foot_comments = foot_comments;
+  tokens.head_comments = head_comments
+  tokens.foot_comments = foot_comments
 }
-
 
 function left (a, b) {
-  return a 
+  return a
     && (
       a.loc.start.line < b.loc.start.line
-      ||
-        a.loc.start.line === b.loc.start.line
+      || a.loc.start.line === b.loc.start.line
         && a.loc.start.column < b.loc.start.column
-    );
+    )
 }
-
 
 function right (a, b) {
-  return a 
+  return a
     && a.loc.start.line === b.loc.start.line
-    && a.loc.start.column > b.loc.start.column;
+    && a.loc.start.column > b.loc.start.column
 }
-
 
 function comment_content (comment) {
   return comment.type === 'Block'
-    ? '/*' + comment.value + '*/'
-    : '//' + comment.value;
+    ? `/*${comment.value}*/`
+    : `//${comment.value}`
 }
