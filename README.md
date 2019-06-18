@@ -1,6 +1,5 @@
-[![NPM version](https://badge.fury.io/js/json-parser.svg)](http://badge.fury.io/js/json-parser)
 [![Build Status](https://travis-ci.org/kaelzhang/node-json-parser.svg?branch=master)](https://travis-ci.org/kaelzhang/node-json-parser)
-<!-- [![Dependency Status](https://david-dm.org/kaelzhang/node-json-parser.svg)](https://david-dm.org/kaelzhang/node-json-parser) -->
+[![Coverage](https://codecov.io/gh/kaelzhang/node-json-parser/branch/master/graph/badge.svg)](https://codecov.io/gh/kaelzhang/node-json-parser)
 
 # json-parser
 
