@@ -21,15 +21,18 @@ $ npm i json-parser
 
 ```js
 const {parse} = require('json-parser')
+```
 
-parse(text, reviver? = null, remove_comments? = false): null | object
+```ts
+parse(text, reviver? = null, remove_comments? = false)
+  : object | string | number | boolean | null
 ```
 
 - **text** `string` The string to parse as JSON. See the [JSON](http://json.org/) object for a description of JSON syntax.
 - **reviver?** `Function() | null` Default to `null`. It acts the same as the second parameter of [`JSON.parse`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse). If a function, prescribes how the value originally produced by parsing is transformed, before being returned.
 - **remove_comments?** `boolean = false` If true, the parsed JSON Object won't contain comments
 
-Returns `object | null` corresponding to the given JSON text.
+Returns `object | string | number | boolean | null` corresponding to the given JSON text.
 
 content
 
