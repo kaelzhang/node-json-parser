@@ -1,6 +1,6 @@
 {
   "name": "json-parser",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "description": "JSON parser to parse JSON object and MAINTAIN comments.",
   "main": "src/index.js",
   "scripts": {

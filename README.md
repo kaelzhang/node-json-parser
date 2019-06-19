@@ -11,6 +11,9 @@ This is a very low level module. For most situations, recommend to use [`comment
 
 `json-parser@2.x` brings some breaking changes by completely refactoring with [`Symbol`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol)s
 
+- supports comments everywhere, yes, **EVERYWHERE** in a JSON file, eventually 😆
+- fixes the known issue about comments inside arrays.
+
 ## Install
 
 ```sh
