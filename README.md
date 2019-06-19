@@ -102,13 +102,30 @@ And the result will be:
 
 There are **SEVEN** kinds of symbol properties:
 
-- `Symbol.for('before-all')` comment tokens before the JSON object
-- `Symbol.for('before')` comment tokens before any properties/items inside an object/array
-- `Symbol.for(\`after-prop:${prop}\`)` comment tokens after property key `prop` and before colon(`:`)
-- `Symbol.for(\`after-colon:${prop}\`)` comment tokens after the colon(`:`) of property `prop` and before property value
-- `Symbol.for(\`after-value:${prop}\`)` comment tokens after the value of property `prop`/the item of index `prop` and before the key-value/item delimiter(`,`)
-- `Symbol.for(\`after-comma:${prop}\`)` comment tokens after the comma of `prop`-value pair and before the next key-value pair/item
-- `Symbol.for('after-all')` comment tokens after the JSON object
+```js
+// comment tokens before the JSON object
+Symbol.for('before-all')
+
+// comment tokens before any properties/items inside an object/array
+Symbol.for('before')
+
+// comment tokens after property key `prop` and before colon(`:`)
+Symbol.for(`after-prop:${prop}`)
+
+// comment tokens after the colon(`:`) of property `prop` and before property value
+Symbol.for(`after-colon:${prop}`)
+
+// comment tokens after the value of property `prop`/the item of index `prop`
+// and before the key-value/item delimiter(`,`)
+Symbol.for(`after-value:${prop}`)
+
+// comment tokens after the comma of `prop`-value pair
+// and before the next key-value pair/item
+Symbol.for(`after-comma:${prop}`)
+
+// comment tokens after the JSON object
+Symbol.for('after-all')
+```
 
 And the value of each symbol property is an **array** of `CommentToken`
 
