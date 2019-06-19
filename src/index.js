@@ -47,7 +47,6 @@ const PREFIX_AFTER_COLON = 'after-colon'
 const PREFIX_AFTER_COMMA = 'after-comma'
 const PREFIX_AFTER_VALUE = 'after-value'
 const PREFIX_AFTER_ALL = 'after-all'
-const INLINE = 'inline-'
 
 const symbolFor = prefix => Symbol.for(
   last_prop !== UNDEFINED
@@ -75,6 +74,7 @@ const next = () => {
   inline = current
     && new_token
     && current.loc.end.line === new_token.loc.start.line
+    || false
 
   current = new_token
 }
@@ -107,7 +107,6 @@ const restore_comments_host = () => {
 }
 
 const parse_comments = prefix => {
-  const inline_comments = []
   const comments = []
 
   while (
@@ -117,21 +116,19 @@ const parse_comments = prefix => {
       || is('BlockComment')
     )
   ) {
-    if (inline) {
-      inline_comments.push(current)
-    } else {
-      comments.push(current)
+    const comment = {
+      ...current,
+      inline
     }
+
+    delete comment.loc
+    comments.push(comment)
 
     next()
   }
 
   if (remove_comments) {
     return
-  }
-
-  if (inline_comments.length) {
-    comments_host[symbolFor(INLINE + prefix)] = inline_comments
   }
 
   if (comments.length) {

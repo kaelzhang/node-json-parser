@@ -7,9 +7,9 @@ JSON parser to parse JSON object and MAINTAIN comments.
 
 This is a very low level module. For most situations, recommend to use [`comment-json`](https://www.npmjs.org/package/comment-json) instead.
 
-## What's new in `2.0.0`?
+## What's new in `2.0.0`
 
-
+`json-parser@2.0.0` brings some breaking changes by completely refactoring with [`Symbol`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol)s
 
 ## Install
 
@@ -33,15 +33,28 @@ content
 
 ```js
 /**
- blah
+ before-all
  */
-// comment at top
+// before-all
 {
-  // comment for a
-  /* block comment */
-  "a": 1 // comment at right
+  // before
+  /* before */
+  "foo" /* after-prop:foo */ : // after-comma:foo
+    1 // after-value:foo
+    // after-value:foo
+  , // after-comma:foo
+  // after-comma: foo
+  "bar": [ // before
+    // before
+    "baz" // after-value:0
+    // after-value:0
+    , // after-comma: 0
+    "quux"
+    // after-value:1
+  ] // after-value:bar
+  // after-value:bar
 }
-// comment at bottom
+// after-all
 ```
 
 ```js
@@ -55,19 +68,35 @@ And the result will be:
 ```js
 {
   // Comments at the top of the file
-  [Symbol.for('top')]: ['/**\n blah\n */', '// comment at top'],
+  [Symbol.for('before-all')]: [{
+    type: 'BlockComment',
+    value: '\n before-all\n ',
+    inline: false
+  }, {
+    type: 'LineComment',
+    value: ' before-all',
+    inline: false
+  }],
 
-  // Comments at the bottom of the file
-  [Symbol.for('bottom')]: ['// comment at bottom'],
+  ...
 
-  // Comment for a property is the value of `'// <prop>'`
-  '// a': [
-    ['// comment for a', '/* block comment */'],
-    ['// comment at right']
-  ],
+  [Symbol.for('after-prop:foo')]: [{
+    type: 'BlockComment',
+    value: ' after-prop:foo ',
+    inline: true
+  }],
 
   // The real value
-  a: 1
+  foo: 1,
+  bar: [
+    "baz",
+    "quux,
+    [Symbol.for('after-value:0')]: [{
+      type: 'LineComment',
+      value: ' after-value:0',
+      inline: true
+    }, ...]
+  ]
 }
 ```
 
@@ -79,7 +108,11 @@ And the result will be:
 
 ```js
 {
-  a: 1
+  foo: 1,
+  bar: [
+    "baz",
+    "quux"
+  ]
 }
 ```
 

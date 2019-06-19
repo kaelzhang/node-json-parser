@@ -59,8 +59,9 @@ const cases = [
     o: '{"a":1}',
     e (t, obj) {
       t.is(obj.a, 1)
-      const [c] = obj[Symbol.for('inline-before')]
+      const [c] = obj[Symbol.for('before')]
       t.is(c.value, 'a')
+      t.is(c.inline, true)
     }
   },
   {
@@ -69,10 +70,11 @@ const cases = [
     o: '{"a":1}',
     e (t, obj) {
       t.is(obj.a, 1)
-      const [c1] = obj[Symbol.for('inline-before')]
-      const [c2] = obj[Symbol.for('before')]
+      const [c1, c2] = obj[Symbol.for('before')]
       t.is(c1.value, 'a')
+      t.is(c1.inline, true)
       t.is(c2.value, 'b')
+      t.is(c2.inline, false)
     }
   },
   {
@@ -81,8 +83,9 @@ const cases = [
     o: '{"a":1}',
     e (t, obj) {
       t.is(obj.a, 1)
-      const [c] = obj[Symbol.for('inline-after-value:a')]
+      const [c] = obj[Symbol.for('after-value:a')]
       t.is(c.value, 'b')
+      t.is(c.inline, true)
     }
   },
   {
@@ -101,8 +104,9 @@ const cases = [
     }`,
     o: '{"a":1}',
     e (t, obj) {
-      const [c] = obj[Symbol.for('inline-after-prop:a')]
+      const [c] = obj[Symbol.for('after-prop:a')]
       t.is(c.value, ' a ')
+      t.is(c.inline, true)
     }
   },
   {
@@ -115,8 +119,9 @@ const cases = [
     e (t, obj) {
       t.is(obj.a, 1)
       t.is(obj.b, 2)
-      const [c] = obj[Symbol.for('inline-after-comma:a')]
+      const [c] = obj[Symbol.for('after-comma:a')]
       t.is(c.value, ' a')
+      t.is(c.inline, true)
     }
   },
   {
@@ -124,7 +129,7 @@ const cases = [
     s: `{
       "a": /*a*/ [ // b
         //c
-        1, // d
+        1 /*m*/ , // d
         // e
         2
       ] /*
@@ -136,7 +141,8 @@ g*/ //g2
         :
         // k
         1
-    } // f`,
+    } // f
+    //l`,
     o: `{
       "a": [1, 2],
       "b": 1
@@ -145,39 +151,47 @@ g*/ //g2
       t.is(obj.a[0], 1)
       t.is(obj.a[1], 2)
 
-      const [g, g2] = obj[Symbol.for('inline-after-value:a')]
-      t.is(g.value, '\ng')
-      t.is(g2.value, 'g2')
+      const [g, g2, h] = obj[Symbol.for('after-value:a')]
+      t.deepEqual(g, {
+        type: 'BlockComment',
+        value: '\ng',
+        inline: true
+      })
+      t.deepEqual(g2, {
+        type: 'LineComment',
+        value: 'g2',
+        inline: true
+      })
+      t.deepEqual(h, {
+        type: 'LineComment',
+        value: 'h',
+        inline: false
+      })
 
-      const [h] = obj[Symbol.for('after-value:a')]
-      t.is(h.value, 'h')
-
-      const [i] = obj[Symbol.for('inline-after-prop:b')]
+      const [i, j] = obj[Symbol.for('after-prop:b')]
       t.is(i.value, 'i')
-
-      const [j] = obj[Symbol.for('after-prop:b')]
+      t.is(i.inline, true)
       t.is(j.value, ' j')
-
-      const [a] = obj[Symbol.for('inline-after-colon:a')]
-      t.is(a.value, 'a')
 
       const [k] = obj[Symbol.for('after-colon:b')]
       t.is(k.value, ' k')
 
-      const [b] = obj.a[Symbol.for('inline-before')]
+      const [b, c] = obj.a[Symbol.for('before')]
       t.is(b.value, ' b')
-
-      const [c] = obj.a[Symbol.for('before')]
       t.is(c.value, 'c')
 
-      const [d] = obj.a[Symbol.for('inline-after-comma:0')]
+      const [d, e] = obj.a[Symbol.for('after-comma:0')]
       t.is(d.value, ' d')
-
-      const [e] = obj.a[Symbol.for('after-comma:0')]
       t.is(e.value, ' e')
 
-      const [f] = obj[Symbol.for('inline-after-all')]
+      const [m] = obj.a[Symbol.for('after-value:0')]
+      t.is(m.value, 'm')
+
+      const [f, l] = obj[Symbol.for('after-all')]
       t.is(f.value, ' f')
+      t.is(f.inline, true)
+      t.is(l.value, 'l')
+      t.is(l.inline, false)
     }
   }
 ]
@@ -233,6 +247,38 @@ invalid.forEach(i => {
   })
 })
 
-// test('reviver', t => {
+test('reviver', t => {
+  t.is(
+    parser.parse('{"p": 5}', (key, value) =>
+      typeof value === 'number'
+        ? value * 2 // return value * 2 for numbers
+        : value     // return everything else unchanged
+    ).p,
+    10
+  )
+})
 
-// })
+test('special: null', t => {
+  t.is(parser.parse(`// abc\nnull`), null)
+})
+
+test('special: 1', async t => {
+  const result = parser.parse(`//abc\n1`)
+
+  t.is(Number(result), 1)
+  t.is(result[Symbol.for('before-all')][0].value, 'abc')
+})
+
+test('special: "foo"', async t => {
+  const result = parser.parse(`//abc\n"foo"`)
+
+  t.is(String(result), 'foo')
+  t.is(result[Symbol.for('before-all')][0].value, 'abc')
+})
+
+test('special: true', async t => {
+  const result = parser.parse(`//abc\ntrue`)
+
+  t.true(Boolean(result))
+  t.is(result[Symbol.for('before-all')][0].value, 'abc')
+})
