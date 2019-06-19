@@ -20,14 +20,16 @@ $ npm i json-parser
 ## Usage
 
 ```js
-parser(text, reviver? = null, remove_comments? = false)
+const {parse} = require('json-parser')
+
+parse(text, reviver? = null, remove_comments? = false): null | object
 ```
 
 - **text** `string` The string to parse as JSON. See the [JSON](http://json.org/) object for a description of JSON syntax.
 - **reviver?** `Function() | null` Default to `null`. It acts the same as the second parameter of [`JSON.parse`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse). If a function, prescribes how the value originally produced by parsing is transformed, before being returned.
 - **remove_comments?** `boolean = false` If true, the parsed JSON Object won't contain comments
 
-Returns the `Object` corresponding to the given JSON text.
+Returns `object | null` corresponding to the given JSON text.
 
 content
 
@@ -58,9 +60,7 @@ content
 ```
 
 ```js
-const parser = require('json-parser')
-
-console.log(parser.parse(content))
+console.log(parse(content))
 ```
 
 And the result will be:
@@ -100,8 +100,33 @@ And the result will be:
 }
 ```
 
+There are **SEVEN** kinds of symbol properties:
+
+- `Symbol.for('before-all')` comment tokens before the JSON object
+- `Symbol.for('before')` comment tokens before any properties/items inside an object/array
+- `Symbol.for(\`after-prop:${prop}\`)` comment tokens after property key `prop` and before colon(`:`)
+- `Symbol.for(\`after-colon:${prop}\`)` comment tokens after the colon(`:`) of property `prop` and before property value
+- `Symbol.for(\`after-value:${prop}\`)` comment tokens after the value of property `prop`/the item of index `prop` and before the key-value/item delimiter(`,`)
+- `Symbol.for(\`after-comma:${prop}\`)` comment tokens after the comma of `prop`-value pair and before the next key-value pair/item
+- `Symbol.for('after-all')` comment tokens after the JSON object
+
+And the value of each symbol property is an **array** of `CommentToken`
+
+```ts
+interface CommentToken {
+  type: 'BlockComment' | 'LineComment'
+  // The content of the comment, including whitespaces and line breaks
+  value: string
+  // If the start location is the same line as the previous token,
+  // then `inline` is `true`
+  inline: boolean
+}
+```
+
+### Parse into an object without comments
+
 ```js
-console.log(parser.parse(content, null, true))
+console.log(parse(content, null, true))
 ```
 
 And the result will be:
@@ -114,6 +139,68 @@ And the result will be:
     "quux"
   ]
 }
+```
+
+### Special cases
+
+```js
+const parsed = parse(`
+// comment
+1
+`)
+
+console.log(parsed === 1)
+// false
+```
+
+If we parse a JSON of primative type with `remove_comments:false`, then the return value of `parse()` will be of object type.
+
+The value of `parsed` is equivalent to:
+
+```js
+const parsed = new Number(1)
+
+parsed[Symbol.for('before-all')] = [{
+  type: 'LineComment',
+  value: ' comment',
+  inline: false
+}]
+```
+
+Which is similar for:
+
+- `Boolean` type
+- `String` type
+
+For example
+
+```js
+const parsed = parse(`
+"foo" /* comment */
+`)
+```
+
+Which is equivalent to
+
+```js
+const parsed = new String('foo')
+
+parsed[Symbol.for('after-all')] = [{
+  type: 'BlockComment',
+  value: ' comment ',
+  inline: true
+}]
+```
+
+But there is one exception:
+
+```js
+const parsed = parse(`
+// comment
+null
+`)
+
+console.log(parsed === null) // true
 ```
 
 ## License
