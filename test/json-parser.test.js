@@ -1,6 +1,7 @@
 
 
-const {expect} = require('chai')
+const test = require('ava')
+
 const parser = require('../')
 
 // var a = parser.parse('//top\n{// top a\n/* abc */"a":1,//right\n/* bcd */"b":{"a":1}}//bottom');
@@ -86,7 +87,6 @@ const cases = [
   }
 ]
 
-
 cases.forEach(c => {
   describe('parse()', () => {
     const _it = c.only
@@ -102,7 +102,6 @@ cases.forEach(c => {
     })
   })
 })
-
 
 const invalid = [
   '{',
