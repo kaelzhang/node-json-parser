@@ -4,7 +4,7 @@
 
 const jsonWithAllSupportedCases =
 
-// before
+// before-all
 {
   // before
   "foo" /* inline-after-prop:foo */ : /* inline-after-colon:foo */ "bar" /* inline-after-value:foo */
@@ -23,5 +23,5 @@ line 3 */
   // after-prop:baz
     : "quux"
   // after:baz
-} // inline-after
-// after
+} // inline-after-all
+// after-all

@@ -7,20 +7,32 @@ const tokenize = code => esprima.tokenize(code, {
   loc: true
 })
 
+const UNDEFINED = undefined
+
 const previous_hosts = []
 let comments_host = null
 
+const previous_props = []
+let last_prop
+
+let remove_comments = false
 let inline = false
 let tokens = null
 let current = null
 let index
 let reviver = null
-let last_prop
 
-// Clean memory
 const clean = () => {
-  tokens.length =
+  previous_props.length =
   previous_hosts.length = 0
+
+  last_prop = UNDEFINED
+}
+
+const free = () => {
+  clean()
+
+  tokens.length = 0
 
   comments_host =
   tokens =
@@ -28,16 +40,17 @@ const clean = () => {
   reviver = null
 }
 
+const PREFIX_BEFORE_ALL = 'before-all'
 const PREFIX_BEFORE = 'before'
 const PREFIX_AFTER_PROP = 'after-prop'
 const PREFIX_AFTER_COLON = 'after-colon'
 const PREFIX_AFTER_COMMA = 'after-comma'
 const PREFIX_AFTER_VALUE = 'after-value'
-const PREFIX_AFTER = 'after'
+const PREFIX_AFTER_ALL = 'after-all'
 const INLINE = 'inline-'
 
 const symbolFor = prefix => Symbol.for(
-  last_prop
+  last_prop !== UNDEFINED
     ? `${prefix}:${last_prop}`
     : prefix
 )
@@ -54,7 +67,7 @@ const unexpected = () => {
 }
 
 const unexpected_end = () => {
-  throw new SyntaxError('Unexpected end of input')
+  throw new SyntaxError('Unexpected end of JSON input')
 }
 
 const next = () => {
@@ -113,6 +126,10 @@ const parse_comments = prefix => {
     next()
   }
 
+  if (remove_comments) {
+    return
+  }
+
   if (inline_comments.length) {
     comments_host[symbolFor(INLINE + prefix)] = inline_comments
   }
@@ -122,9 +139,22 @@ const parse_comments = prefix => {
   }
 }
 
+const set_prop = (prop, push) => {
+  if (push) {
+    previous_props.push(last_prop)
+  }
+
+  last_prop = prop
+}
+
+const restore_prop = () => {
+  last_prop = previous_props.pop()
+}
+
 const parse_object = () => {
   const obj = {}
   set_comments_host(obj)
+  set_prop(UNDEFINED, true)
 
   let started
   let name
@@ -141,7 +171,8 @@ const parse_object = () => {
 
     started = true
     expect('String')
-    name = last_prop = JSON.parse(current.value)
+    name = JSON.parse(current.value)
+    set_prop(name)
 
     next()
     parse_comments(PREFIX_AFTER_PROP)
@@ -159,6 +190,7 @@ const parse_object = () => {
   next()
   last_prop = undefined
   restore_comments_host()
+  restore_prop()
 
   return obj
 }
@@ -166,6 +198,7 @@ const parse_object = () => {
 const parse_array = () => {
   const array = []
   set_comments_host(array)
+  set_prop(UNDEFINED, true)
 
   let started
   let i = 0
@@ -180,7 +213,7 @@ const parse_array = () => {
     }
 
     started = true
-    last_prop = i
+    set_prop(i)
 
     array[i] = transform(i, walk())
     parse_comments(PREFIX_AFTER_VALUE)
@@ -190,6 +223,7 @@ const parse_array = () => {
   next()
   last_prop = undefined
   restore_comments_host()
+  restore_prop()
 
   return array
 }
@@ -233,8 +267,11 @@ function walk () {
 const isObject = subject => Object(subject) === subject
 
 const parse = (code, rev, no_comments) => {
+  clean()
+
   tokens = tokenize(code)
   reviver = rev
+  remove_comments = no_comments
 
   if (!tokens.length) {
     unexpected_end()
@@ -245,11 +282,11 @@ const parse = (code, rev, no_comments) => {
 
   set_comments_host({})
 
-  parse_comments(PREFIX_BEFORE)
+  parse_comments(PREFIX_BEFORE_ALL)
 
   let result = walk()
 
-  parse_comments(PREFIX_AFTER)
+  parse_comments(PREFIX_AFTER_ALL)
 
   if (current) {
     unexpected()
@@ -273,7 +310,7 @@ const parse = (code, rev, no_comments) => {
   // reviver
   result = transform('', result)
 
-  clean()
+  free()
 
   return result
 }
