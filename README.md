@@ -7,9 +7,9 @@ JSON parser to parse JSON object and MAINTAIN comments.
 
 This is a very low level module. For most situations, recommend to use [`comment-json`](https://www.npmjs.org/package/comment-json) instead.
 
-## What's new in `2.0.0`
+## What's new in `2.x`
 
-`json-parser@2.0.0` brings some breaking changes by completely refactoring with [`Symbol`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol)s
+`json-parser@2.x` brings some breaking changes by completely refactoring with [`Symbol`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol)s
 
 ## Install
 
