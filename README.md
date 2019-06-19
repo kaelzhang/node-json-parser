@@ -77,7 +77,6 @@ And the result will be:
     value: ' before-all',
     inline: false
   }],
-
   ...
 
   [Symbol.for('after-prop:foo')]: [{
@@ -95,7 +94,8 @@ And the result will be:
       type: 'LineComment',
       value: ' after-value:0',
       inline: true
-    }, ...]
+    }, ...],
+    ...
   ]
 }
 ```
