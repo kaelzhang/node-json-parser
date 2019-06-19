@@ -67,7 +67,7 @@ And the result will be:
 
 ```js
 {
-  // Comments at the top of the file
+  // Comments before the JSON object
   [Symbol.for('before-all')]: [{
     type: 'BlockComment',
     value: '\n before-all\n ',
@@ -90,6 +90,8 @@ And the result will be:
   bar: [
     "baz",
     "quux,
+
+    // The property of the array
     [Symbol.for('after-value:0')]: [{
       type: 'LineComment',
       value: ' after-value:0',
