@@ -4,20 +4,24 @@
 
 const formattedJson =
 
-// before-all
+// before
 {
-  // before:foo
-  "foo" /* after-prop:foo */ : /* after-colon:foo */ "bar" /* after-value:foo */, // inline-after-comma:foo
-  // before:bar
-  // before:bar
+  // before
+  "foo" /* inline-after-prop:foo */ : /* inline-after-colon:foo */ "bar" /* inline-after-value:foo */
+  // after-value: foo
+  , // inline-after-comma:foo
+  // after-comma:foo
+  // after-comma:foo
   "bar": [
-    // before:0
+    // before
     "baz"
+    // after-value:baz
   ], /* inline-after-comma: foo
 line 2
 line 3 */
-  "baz" // after-prop:baz
+  "baz" // inline-after-prop:baz
+  // after-prop:baz
     : "quux"
-  // after
-}
-// after-all
+  // after:baz
+} // inline-after
+// after
