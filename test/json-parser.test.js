@@ -211,20 +211,20 @@ cases.forEach(c => {
 })
 
 const invalid = [
-  '{',
-  '}',
-  '[',
-  '',
-  '{a:1}',
-  '{"a":a}',
-  '{"a":undefined}'
+  ['{', 1, 1],
+  ['}', 1, 0],
+  ['[', 1, 1],
+  ['', 1, 0],
+  ['{a:1}', 1, 1],
+  ['{"a":a}', 1, 5],
+  ['{"a":undefined}', 1, 5]
 ]
 
 const removes_position = s => s.replace(/\s+in JSON at position.+$/, '')
 
 // ECMA262 does not define the standard of error messages.
 // However, we throw error messages the same as JSON.parse()
-invalid.forEach(i => {
+invalid.forEach(([i, line, col]) => {
   test(`error message:${i}`, t => {
     let error
     let err
@@ -238,12 +238,16 @@ invalid.forEach(i => {
     try {
       JSON.parse(i)
     } catch (e) {
-      // console.log(e)
       err = e
     }
 
     t.is(!!(err && error), true)
     t.is(error.message, removes_position(err.message))
+
+    if (line !== undefined && col !== undefined) {
+      t.is(error.line, line)
+      t.is(error.column, col)
+    }
   })
 })
 

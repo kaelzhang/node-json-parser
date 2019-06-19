@@ -18,6 +18,7 @@ let last_prop
 let remove_comments = false
 let inline = false
 let tokens = null
+let last = null
 let current = null
 let index
 let reviver = null
@@ -26,6 +27,7 @@ const clean = () => {
   previous_props.length =
   previous_hosts.length = 0
 
+  last = null
   last_prop = UNDEFINED
 }
 
@@ -36,6 +38,7 @@ const free = () => {
 
   comments_host =
   tokens =
+  last =
   current =
   reviver = null
 }
@@ -66,7 +69,16 @@ const unexpected = () => {
 }
 
 const unexpected_end = () => {
-  throw new SyntaxError('Unexpected end of JSON input')
+  const error = new SyntaxError('Unexpected end of JSON input')
+  Object.assign(error, last
+    ? last.loc.end
+    // Empty string
+    : {
+      line: 1,
+      column: 0
+    })
+
+  throw error
 }
 
 const next = () => {
@@ -76,6 +88,7 @@ const next = () => {
     && current.loc.end.line === new_token.loc.start.line
     || false
 
+  last = current
   current = new_token
 }
 
