@@ -47,7 +47,10 @@ const transform = (k, v) => reviver
   : v
 
 const unexpected = () => {
-  throw new SyntaxError(`Unexpected token ${current.value.slice(0, 1)}`)
+  const error = new SyntaxError(`Unexpected token ${current.value.slice(0, 1)}`)
+  Object.assign(error, current.loc.start)
+
+  throw error
 }
 
 const unexpected_end = () => {
@@ -94,7 +97,13 @@ const parse_comments = prefix => {
   const inline_comments = []
   const comments = []
 
-  while (is('LineComment') || is('BlockComment')) {
+  while (
+    current
+    && (
+      is('LineComment')
+      || is('BlockComment')
+    )
+  ) {
     if (inline) {
       inline_comments.push(current)
     } else {
@@ -207,26 +216,21 @@ function walk () {
     negative = '-'
   }
 
+  let v
+
   switch (tt) {
   case 'String':
-    next()
-    // eslint-disable-next-line no-new-wrappers
-    return new String(JSON.parse(current.value))
   case 'Boolean':
-    next()
-    // eslint-disable-next-line no-new-wrappers
-    return new Boolean(JSON.parse(current.value))
   case 'Null':
-    next()
-    return null
   case 'Numeric':
+    v = current.value
     next()
-    // eslint-disable-next-line no-new-wrappers
-    return new Number(JSON.parse(negative + current.value))
+    return JSON.parse(negative + v)
   default:
-    unexpected()
   }
 }
+
+const isObject = subject => Object(subject) === subject
 
 const parse = (code, rev, no_comments) => {
   tokens = tokenize(code)
@@ -246,11 +250,21 @@ const parse = (code, rev, no_comments) => {
   let result = walk()
 
   parse_comments(PREFIX_AFTER)
+
   if (current) {
     unexpected()
   }
 
-  if (!no_comments) {
+  if (!no_comments && result !== null) {
+    if (!isObject(result)) {
+      // 1 -> new Number(1)
+      // true -> new Boolean(1)
+      // "foo" -> new String("foo")
+
+      // eslint-disable-next-line no-new-object
+      result = new Object(result)
+    }
+
     Object.assign(result, comments_host)
   }
 

@@ -2,7 +2,7 @@
 
 // All cases
 
-const formattedJson =
+const jsonWithAllSupportedCases =
 
 // before
 {
