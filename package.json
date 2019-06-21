@@ -1,6 +1,6 @@
 {
   "name": "json-parser",
-  "version": "2.1.2",
+  "version": "3.0.0",
   "description": "JSON parser to parse JSON object and MAINTAIN comments.",
   "main": "src/index.js",
   "scripts": {
@@ -53,6 +53,6 @@
     "nyc": "^14.1.1"
   },
   "dependencies": {
-    "esprima": "^4.0.1"
+    "comment-json": "^2.0.4"
   }
 }
