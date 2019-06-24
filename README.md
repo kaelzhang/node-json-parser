@@ -1,6 +1,8 @@
 [![Build Status](https://travis-ci.org/kaelzhang/node-json-parser.svg?branch=master)](https://travis-ci.org/kaelzhang/node-json-parser)
 [![Coverage](https://codecov.io/gh/kaelzhang/node-json-parser/branch/master/graph/badge.svg)](https://codecov.io/gh/kaelzhang/node-json-parser)
 
+This package is **deprecated**, please use [**`comment-json`**](https://github.com/kaelzhang/node-comment-json) instead.
+
 # json-parser
 
 JSON parser to parse JSON object and MAINTAIN comments.
