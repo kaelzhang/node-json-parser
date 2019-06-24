@@ -3,6 +3,10 @@
 
 This package is **deprecated**, please use [**`comment-json`**](https://github.com/kaelzhang/node-comment-json) instead.
 
+## [comment-json](https://github.com/kaelzhang/node-comment-json)
+
+****
+
 # json-parser
 
 JSON parser to parse JSON object and MAINTAIN comments.
