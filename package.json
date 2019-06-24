@@ -1,6 +1,6 @@
 {
   "name": "json-parser",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "description": "JSON parser to parse JSON object and MAINTAIN comments.",
   "main": "src/index.js",
   "scripts": {
@@ -48,11 +48,11 @@
     "@ostai/eslint-config": "^3.2.0",
     "ava": "^2.1.0",
     "codecov": "^3.5.0",
-    "eslint": "^5.16.0",
+    "eslint": "^6.0.0",
     "eslint-plugin-import": "^2.17.3",
     "nyc": "^14.1.1"
   },
   "dependencies": {
-    "comment-json": "^2.0.4"
+    "comment-json": "^2.1.0"
   }
 }
